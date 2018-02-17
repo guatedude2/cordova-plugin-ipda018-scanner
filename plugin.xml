@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" id="cordova-plugin-ipda018-scanner" version="1.0.0">
+    <name>Scanner</name>
+    <description>Cordova Ipda018 Scanner Plugin</description>
+    <license>Apache 2.0</license>
+    <keywords>cordova,scanner,ipda018</keywords>
+
+    <engines>
+	<engine name="cordova" version=">=3.2.0" />
+    </engines>
+
+    <js-module src="www/scanner.js" name="scanner">
+    	<clobbers target="window.Scanner" />
+    </js-module>
+
+    <!-- android -->
+    <platform name="android">
+
+        <config-file target="config.xml" parent="/*">
+            <feature name="Scanner">
+                <param name="android-package" value="org.apache.cordova.labs.scanner.ipda018.Scanner" />
+            </feature>
+        </config-file>
+
+        <lib-file src="src/android/scanSDK.jar" arch="device" />
+        <source-file src="src/android/Scanner.java" target-dir="src/org/apache/cordova/labs/ipda018/scanner" />
+    </platform>
+
+</plugin>

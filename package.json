@@ -1,0 +1,33 @@
+{
+  "name": "cordova-plugin-ipda018-scanner",
+  "version": "1.0.0",
+  "description": "Cordova Keyboard Plugin",
+  "cordova": {
+    "id": "cordova-plugin-ipda018-scanner",
+    "platforms": [
+      "android"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/guatedude2/cordova-plugin-ipda018-scanner.git"
+  },
+  "keywords": [
+    "cordova",
+    "keyboard",
+    "ecosystem:cordova",
+    "cordova-android"
+  ],
+  "engines": [
+    {
+      "name": "cordova",
+      "version": ">=3.2.0"
+    }
+  ],
+  "author": "Apache Software Foundation",
+  "license": "Apache 2.0",
+  "bugs": {
+    "url": "https://github.com/guatedude2/cordova-plugin-ipda018-scanner/issues"
+  },
+  "homepage": "https://github.com/guatedude2/cordova-plugin-ipda018-scanner#readme"
+}
