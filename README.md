@@ -16,18 +16,16 @@ This plugin has only been tested in Cordova 3.2 or greater, and its use in previ
     - [Scanner.close](#scannerClose)
     - [Scanner.setVibrateEnabled](#scannerSetVibrateEnabled)
     - [Scanner.setBeepEnabled](#scannerSetBeepEnabled)
-    - [Scanner.on](#scannerOn)
-    - [Scanner.off](#scannerOff)
 - [Properties](#properties)
     - [Scanner.isOpen](#scannerIsOpen)
     - [Scanner.vibrateEnabled](#scannerVibrateEnabled)
     - [Scanner.beepEnabled](#scannerBeepEnabled)
 - [Events](#events)
-    - [open](#open)
-    - [close](#close)
-    - [scan](#scan)
-    - [vibratechange](#vibratechange)
-    - [beepchange](#beepchange)
+    - [scannerOpen](#scannerOpen)
+    - [scannerClose](#scannerClose)
+    - [scannerScan](#scannerScan)
+    - [scannerVibrateChange](#scannerVibrateChange)
+    - [scannerBeepChange](#scannerBeepChange)
 - [Releases](#releases)
 
 # Installation
@@ -82,20 +80,7 @@ Enables or disables vibration when scanning succeeds
 Enables or disables the beep sound when scanning succeeds
 
     Scanner.setBeepEnabled(boolean)
-
-## Scanner.on
-
-Attaches an event listener. See [events](#events)
-
-    Scanner.on(string, function);
-
-## Scanner.off
-
-Remvoes an event listener. See [events](#events)
-
-    Scanner.off(string, function);
-
-
+    
 # Properties
 
 ## Scanner.isOpen
@@ -118,48 +103,52 @@ Returns whether the scanner beep-on-scan is enabled or not.
 
 # Events
 
-## open
+## scannerOpen
 
 This event is fired when the device is opened
 
-    Scanner.on('open', function () {
+    window.addEventListener('scannerOpen', function () {
         // Describe your logic which will be run each time scanner is open
     });
 
-## close
+## scannerClose
 
 This event is fired when the device is closed
 
-    Scanner.on('close', function () {
+    window.addEventListener('scannerClose', function () {
         // Describe your logic which will be run each time scanner is close
     });
 
-## scan
+## scannerScan
 
 This event is fired when the device scans succesfully
 
-    Scanner.on('scan', function (string) {
+    window.addEventListener('scannerScan', function (event) {
         // Describe your logic which will be run each time scanner scans successfully
+        console.log('Barcode', event.details);
     });
 
-## vibratechange
+## scannerVibrateChange
 
 This event is fired when the scanner vibrate settings is enabled or disabled
 
-    Scanner.on('vibratechange', function (boolean) {
+    window.addEventListener('scannerVibrateChange', function (event) {
         // Describe your logic which will be run each time the vibrate setting is changed
     });
 
-## beepchange
+## scannerBeepChange
 
 This event is fired when the scanner beep settings is enabled or disabled
 
-    Scanner.on('beepchange', function (boolean) {
+    window.addEventListener('scannerBeepChange', function (event) {
         // Describe your logic which will be run each time the beep setting is changed
     });
 
 
 # Releases
 
+- 1.1.0
+	- Fixed flipped values of beep and vibrate 
+	- Converts plugin to use window events
 - 1.0.0
-    - Initial NPM release
+   - Initial NPM release
