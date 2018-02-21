@@ -14,6 +14,7 @@ import org.json.JSONObject;
 public class Scanner extends CordovaPlugin {
 	ScanDevice sm;
 	private final static String SCAN_ACTION = "scan.rcv.message";
+	private final static String EVENT_PREFIX = "scanner";
 	private CallbackContext mMainCallback;
 
 	private BroadcastReceiver mScanReceiver = new BroadcastReceiver() {
@@ -26,7 +27,7 @@ public class Scanner extends CordovaPlugin {
 			String barcodeStr = new String(barocode, 0, barocodelen);
 
 			JSONArray jsEvent = new JSONArray();
-			jsEvent.put("scan");
+			jsEvent.put(EVENT_PREFIX + "Scan");
 			jsEvent.put(barcodeStr);
 			PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, jsEvent);
 			pluginResult.setKeepCallback(true);
@@ -43,39 +44,44 @@ public class Scanner extends CordovaPlugin {
 		sm = new ScanDevice();
 	}
 
-    @Override
-    public void onPause(boolean multitasking) {
-				JSONArray jsEvent = new JSONArray();
-				jsEvent.put("pluginpause");
-				PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, jsEvent);
-				pluginResult.setKeepCallback(true);
-				mMainCallback.sendPluginResult(pluginResult);
+		@Override
+		public void onPause(boolean multitasking) {
+			JSONArray jsEvent = new JSONArray();
+			jsEvent.put(EVENT_PREFIX + "PluginPause");
+			PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, jsEvent);
+			pluginResult.setKeepCallback(true);
+			mMainCallback.sendPluginResult(pluginResult);
 
-        super.onPause(multitasking);
-        if(sm != null) {
-        	sm.stopScan();
-        }
-        this.cordova.getActivity().unregisterReceiver(mScanReceiver);
-    }
-    @Override
-    public void onResume(boolean multitasking) {
-        super.onResume(multitasking);
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(SCAN_ACTION);
-        this.cordova.getActivity().registerReceiver(mScanReceiver, filter);
+			super.onPause(multitasking);
+			if(sm != null) {
+				sm.stopScan();
+			}
+			this.cordova.getActivity().unregisterReceiver(mScanReceiver);
+		}
+		@Override
+		public void onResume(boolean multitasking) {
+			super.onResume(multitasking);
+			IntentFilter filter = new IntentFilter();
+			filter.addAction(SCAN_ACTION);
+			this.cordova.getActivity().registerReceiver(mScanReceiver, filter);
 
-		JSONArray jsEvent = new JSONArray();
-		jsEvent.put("pluginresume");
-		jsEvent.put(sm.isScanOpened());
-		jsEvent.put(sm.getScanVibrateState());
-		jsEvent.put(sm.getScanBeepState());
-		PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, jsEvent);
-		pluginResult.setKeepCallback(true);
-		mMainCallback.sendPluginResult(pluginResult);
-    }
+			if (sm.isScanOpened() && sm.getOutScanMode() != 0) {
+				sm.setOutScanMode(0);
+			}
 
-    @Override
-    public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
+			JSONArray jsEvent = new JSONArray();
+			jsEvent.put(EVENT_PREFIX + "PluginResume");
+			int isOpen  = (sm.isScanOpened() ? 1 : 0);
+			int vibrate  = (sm.getScanVibrateState() ? 1 : 0);
+			int beep  = (sm.getScanBeepState() ? 1 : 0);
+			jsEvent.put(isOpen << 2 | vibrate << 1 | beep);
+			PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, jsEvent);
+			pluginResult.setKeepCallback(true);
+			mMainCallback.sendPluginResult(pluginResult);
+		}
+
+		@Override
+		public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
 
 		if ("init".equals(action)) {
 			mMainCallback = callbackContext;
@@ -88,7 +94,7 @@ public class Scanner extends CordovaPlugin {
 			sm.setOutScanMode(0);
 
 			JSONArray jsEvent = new JSONArray();
-			jsEvent.put("open");
+			jsEvent.put(EVENT_PREFIX + "Open");
 			PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, jsEvent);
 			pluginResult.setKeepCallback(true);
 			mMainCallback.sendPluginResult(pluginResult);
@@ -100,7 +106,7 @@ public class Scanner extends CordovaPlugin {
 			}
 
 			JSONArray jsEvent = new JSONArray();
-			jsEvent.put("close");
+			jsEvent.put(EVENT_PREFIX + "Close");
 			PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, jsEvent);
 			pluginResult.setKeepCallback(true);
 			mMainCallback.sendPluginResult(pluginResult);
@@ -114,7 +120,7 @@ public class Scanner extends CordovaPlugin {
 			}
 
 			JSONArray jsEvent = new JSONArray();
-			jsEvent.put("vibratechange");
+			jsEvent.put(EVENT_PREFIX + "VibrateChange");
 			jsEvent.put(args.getBoolean(0));
 			PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, jsEvent);
 			pluginResult.setKeepCallback(true);
@@ -129,7 +135,7 @@ public class Scanner extends CordovaPlugin {
 			}
 
 			JSONArray jsEvent = new JSONArray();
-			jsEvent.put("beepchange");
+			jsEvent.put(EVENT_PREFIX + "BeepChange");
 			jsEvent.put(args.getBoolean(0));
 			PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, jsEvent);
 			pluginResult.setKeepCallback(true);
@@ -140,5 +146,5 @@ public class Scanner extends CordovaPlugin {
 		}
 		callbackContext.error(action + " is not a supported action");
 		return false;
-    }
+		}
 }

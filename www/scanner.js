@@ -1,4 +1,3 @@
-
 var argscheck = require('cordova/argscheck');
 var utils = require('cordova/utils');
 var exec = require('cordova/exec');
@@ -12,38 +11,6 @@ var listeners = {};
 
 // Scanner class
 var Scanner = function() {};
-
-Scanner.on = function(type, listener) {
-  if (typeof listener !== 'function') {
-    return;
-  }
-  if (listeners[type] instanceof Array) {
-    listeners[type].push(type, listener);
-  } else {
-    listeners[type] = [listener];
-  }
-};
-
-Scanner.off = function(type, listener) {
-  if (typeof listener !== 'function') {
-    return;
-  }
-  if (listeners[type] instanceof Array) {
-    var index = listeners[type].indexOf(listener);
-    if (index >= 0) {
-      listeners[type].splice(index, 1);
-    }
-  }
-};
-
-Scanner.emit = function(type) {
-  var args = Array.prototype.slice.call(arguments, 1)
-  if (listeners[type] instanceof Array) {
-    listeners[type].forEach(function(listener) {
-      listener.apply(null, args);
-    });
-  }
-};
 
 Scanner.open = function() {
   exec(null, null, 'Scanner', 'open', []);
@@ -75,44 +42,47 @@ Object.defineProperties(Scanner, {
   vibrateEnabled: {
     enumerable: true,
     get() {
-      return scannerValues.beepEnabled;
+      return scannerValues.vibrateEnabled;
     }
   },
   beepEnabled: {
     enumerable: true,
     get() {
-      return scannerValues.vibrateEnabled;
+      return scannerValues.beepEnabled;
     }
   }
 });
 
-Scanner.on('pluginresume', function(isOpen, vibrateEnabled, beepEnabled) {
-  scannerValues.isOpen = isOpen;
-  scannerValues.vibrateEnabled = vibrateEnabled;
-  scannerValues.beepEnabled = beepEnabled;
-});
+// window event to update the plugin values
+window.addEventListener('scannerPluginResume', function (event) {
+  scannerValues.isOpen = (event.detail & 4) === 4;
+  scannerValues.vibrateEnabled = (event.detail & 2) === 2;
+  scannerValues.beepEnabled = (event.detail & 1) === 1;
+})
 
-Scanner.on('open', function() {
+window.addEventListener('scannerOpen', function() {
   scannerValues.isOpen = true;
 });
 
-Scanner.on('close', function() {
+window.addEventListener('scannerClose', function() {
   scannerValues.isOpen = false;
 });
 
-Scanner.on('vibratechanged', function(enabled) {
-  scannerValues.vibrateEnabled = enabled;
+window.addEventListener('scannerVibrateChange', function(event) {
+  scannerValues.vibrateEnabled = event.detail;
 });
 
-Scanner.on('beepchanged', function(enabled) {
-  scannerValues.beepEnabled = enabled;
+window.addEventListener('scannerBeepChange', function(event) {
+  scannerValues.beepEnabled = event.detail;
 });
 
 // initialize plugin
 document.addEventListener('deviceready', function() {
   exec(
     function(args) {
-      Scanner.emit.apply(null, args);
+      window.dispatchEvent(new CustomEvent(args[0], {
+        detail: args[1]
+      }));
     },
     null,
     'Scanner',
@@ -122,4 +92,3 @@ document.addEventListener('deviceready', function() {
 });
 
 module.exports = Scanner;
-
