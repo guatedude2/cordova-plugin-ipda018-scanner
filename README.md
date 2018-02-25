@@ -30,7 +30,7 @@ This plugin has only been tested in Cordova 3.2 or greater, and its use in previ
 
 # Installation
 
-From [npm](https://www.npmjs.com/package/cordova-plugin-keyboard) (stable)
+From [npm](https://www.npmjs.com/package/cordova-plugin-ipda018-scanner) (stable)
 
 `cordova plugin add cordova-plugin-ipda018-scanner`
 
@@ -80,7 +80,7 @@ Enables or disables vibration when scanning succeeds
 Enables or disables the beep sound when scanning succeeds
 
     Scanner.setBeepEnabled(boolean)
-    
+
 # Properties
 
 ## Scanner.isOpen
@@ -147,8 +147,11 @@ This event is fired when the scanner beep settings is enabled or disabled
 
 # Releases
 
+- 1.1.2
+	- Fixes readme
+
 - 1.1.0
-	- Fixed flipped values of beep and vibrate 
+	- Fixed flipped values of beep and vibrate
 	- Converts plugin to use window events
 - 1.0.0
    - Initial NPM release
